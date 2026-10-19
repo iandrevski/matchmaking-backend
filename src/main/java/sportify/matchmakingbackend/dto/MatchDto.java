@@ -16,7 +16,8 @@ public record MatchDto(
         String venueName,
         Long organizerId,
         String organizerUsername,
-        int participantsCount
+        int participantsCount,
+        List<Long> participantIds
 ) {
 
     public static MatchDto from(Match match) {
@@ -30,9 +31,9 @@ public record MatchDto(
                 match.getVenue().getName(),
                 match.getOrganizer() != null ? match.getOrganizer().getId() : null,
                 match.getOrganizer() != null ? match.getOrganizer().getUsername() : null,
-                match.getParticipants().size()
-        );
-    }
+                match.getParticipants().size(),
+                match.getParticipants().stream().map(participant -> participant.getId()).toList()
+        );}
 
     public static List<MatchDto> from(List<Match> matches) {
         return matches.stream().map(MatchDto::from).toList();
