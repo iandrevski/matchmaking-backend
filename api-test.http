@@ -1,0 +1,13 @@
+### Create a basketball match (organizer: ana)
+POST http://localhost:8090/api/matches?organizerId=3
+Content-Type: application/json
+
+{
+  "dateFrom": "2026-10-17T20:00:00",
+  "dateTo": "2026-10-17T21:30:00",
+  "sportId": 2,
+  "venueId": 2
+}
+
+### All matches
+GET http://localhost:8090/api/matches
