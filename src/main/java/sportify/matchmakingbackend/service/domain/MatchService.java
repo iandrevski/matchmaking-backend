@@ -27,4 +27,6 @@ public interface MatchService {
     Match leave(Long matchId, Long playerId);
 
     Match cancel(Long matchId);
+
+    List<Match> findFiltered(Long sportId, MatchStatus status);
 }

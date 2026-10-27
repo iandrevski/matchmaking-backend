@@ -132,6 +132,19 @@ public class MatchServiceImpl implements MatchService {
         return matchRepository.save(match);
     }
 
+    @Override
+    public List<Match> findFiltered(Long sportId, MatchStatus status) {
+        if (sportId != null && status != null) {
+            return matchRepository.findBySportIdAndStatus(sportId, status);
+        } else if (sportId != null) {
+            return matchRepository.findBySportId(sportId);
+        } else if (status != null) {
+            return matchRepository.findByStatus(status);
+        } else {
+            return matchRepository.findAll();
+        }
+    }
+
     private Match getMatch(Long id) {
         return matchRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match", id));

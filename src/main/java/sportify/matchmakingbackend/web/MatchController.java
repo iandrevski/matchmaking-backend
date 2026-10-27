@@ -23,10 +23,8 @@ public class MatchController {
 
     // GET /api/matches | ?status=OPEN
     @GetMapping
-    public List<MatchDto> findAll(@RequestParam(required = false) MatchStatus status) {
-        return status != null
-                ? matchApplicationService.findByStatus(status)
-                : matchApplicationService.findAll();
+    public List<MatchDto> findAll(@RequestParam(required = false) Long sportId, @RequestParam(required = false) MatchStatus status) {
+        return matchApplicationService.findFiltered(sportId, status);
     }
 
     // GET /api/matches/open?sportId=1 — натпревари на кои може да се приклучи
