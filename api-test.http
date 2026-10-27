@@ -11,3 +11,32 @@ Content-Type: application/json
 
 ### All matches
 GET http://localhost:8090/api/matches
+
+### Volleyball
+POST http://localhost:8090/api/sports
+Content-Type: application/json
+
+{ "name": "Volleyball", "numberOfPlayers": 12 }
+
+### Table tennis
+POST http://localhost:8090/api/sports
+Content-Type: application/json
+
+{ "name": "Table Tennis", "numberOfPlayers": 2 }
+
+### Handball
+POST http://localhost:8090/api/sports
+Content-Type: application/json
+
+{ "name": "Handball", "numberOfPlayers": 14 }
+
+### Create a basketball match (organizer: marko)
+POST http://localhost:8090/api/matches?organizerId=2
+Content-Type: application/json
+
+{
+"dateFrom": "2026-10-28T20:00:00",
+"dateTo": "2026-10-28T21:30:00",
+"sportId": 2,
+"venueId": 2
+}

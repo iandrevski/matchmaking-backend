@@ -35,4 +35,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     boolean existsOverlappingMatch(@Param("venueId") Long venueId,
                                    @Param("dateFrom") LocalDateTime dateFrom,
                                    @Param("dateTo") LocalDateTime dateTo);
+
+    List<Match> findBySportId(Long sportId);
 }

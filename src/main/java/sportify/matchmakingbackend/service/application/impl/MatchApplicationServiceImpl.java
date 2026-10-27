@@ -97,4 +97,9 @@ public class MatchApplicationServiceImpl implements MatchApplicationService {
     public MatchDto cancel(Long matchId) {
         return MatchDto.from(matchService.cancel(matchId));
     }
+
+    @Override
+    public List<MatchDto> findFiltered(Long sportId, MatchStatus status) {
+        return MatchDto.from(matchService.findFiltered(sportId, status));
+    }
 }
