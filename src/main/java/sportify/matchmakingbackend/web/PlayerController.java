@@ -2,6 +2,8 @@ package sportify.matchmakingbackend.web;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import sportify.matchmakingbackend.dto.LocationDto;
 import sportify.matchmakingbackend.dto.PlayerDto;
@@ -32,14 +34,19 @@ public class PlayerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public PlayerDto updateProfile(@PathVariable Long id, @Valid @RequestBody UpdatePlayerDto dto) {
-        return playerApplicationService.updateProfile(id, dto);
+    // играчот може да го менува само СВОЈОТ профил → /me наместо /{id}
+    @PutMapping("/me")
+    public PlayerDto updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePlayerDto dto) {
+        return playerApplicationService.updateProfile(userId(jwt), dto);
     }
 
     // моменталната локација ја праќа апликацијата (expo-location)
-    @PutMapping("/{id}/location")
-    public PlayerDto updateLocation(@PathVariable Long id, @Valid @RequestBody LocationDto dto) {
-        return playerApplicationService.updateLocation(id, dto);
+    @PutMapping("/me/location")
+    public PlayerDto updateLocation(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody LocationDto dto) {
+        return playerApplicationService.updateLocation(userId(jwt), dto);
+    }
+
+    private static Long userId(Jwt jwt) {
+        return Long.valueOf(jwt.getSubject());
     }
 }

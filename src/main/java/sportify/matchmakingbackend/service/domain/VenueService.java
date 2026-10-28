@@ -19,7 +19,7 @@ public interface VenueService {
 
     Venue create(Venue venue);
 
-    Venue update(Long id, Venue venue);
+    Venue update(Long id, Long ownerId, Venue venue);
 
-    void deleteById(Long id);
+    void deleteById(Long id, Long ownerId);
 }

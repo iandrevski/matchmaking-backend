@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.Player;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
+import sportify.matchmakingbackend.model.exceptions.ForbiddenOperationException;
 import sportify.matchmakingbackend.model.exceptions.InvalidOperationException;
 import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.repository.MatchRepository;
@@ -123,8 +124,11 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     @Transactional
-    public Match cancel(Long matchId) {
+    public Match cancel(Long matchId, Long requesterId) {
         Match match = getMatch(matchId);
+        if (match.getOrganizer() == null || !match.getOrganizer().getId().equals(requesterId)) {
+            throw new ForbiddenOperationException("Only the organizer can cancel this match");
+        }
         if (match.getStatus() == MatchStatus.FINISHED) {
             throw new InvalidOperationException("Cannot cancel a finished match");
         }

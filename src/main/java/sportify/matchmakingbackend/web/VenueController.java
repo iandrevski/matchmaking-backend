@@ -3,6 +3,8 @@ package sportify.matchmakingbackend.web;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
@@ -44,20 +46,25 @@ public class VenueController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // TODO: ownerId да се земе од логираниот партнер (JWT) наместо од query param
+    // сопственикот е најавениот партнер (од токенот)
     @PostMapping
-    public ResponseEntity<VenueDto> create(@RequestParam Long ownerId, @Valid @RequestBody CreateVenueDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(venueApplicationService.create(ownerId, dto));
+    public ResponseEntity<VenueDto> create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateVenueDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(venueApplicationService.create(userId(jwt), dto));
     }
 
+    // само сопственикот може да го менува/брише својот терен
     @PutMapping("/{id}")
-    public VenueDto update(@PathVariable Long id, @Valid @RequestBody CreateVenueDto dto) {
-        return venueApplicationService.update(id, dto);
+    public VenueDto update(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateVenueDto dto) {
+        return venueApplicationService.update(id, userId(jwt), dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        venueApplicationService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        venueApplicationService.deleteById(id, userId(jwt));
         return ResponseEntity.noContent().build();
+    }
+
+    private static Long userId(Jwt jwt) {
+        return Long.valueOf(jwt.getSubject());
     }
 }
