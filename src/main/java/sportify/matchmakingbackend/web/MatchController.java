@@ -3,6 +3,8 @@ package sportify.matchmakingbackend.web;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import sportify.matchmakingbackend.dto.CreateMatchDto;
 import sportify.matchmakingbackend.dto.MatchDto;
@@ -21,9 +23,10 @@ public class MatchController {
         this.matchApplicationService = matchApplicationService;
     }
 
-    // GET /api/matches | ?status=OPEN
+    // GET /api/matches | ?sportId=1 | ?status=OPEN | ?sportId=1&status=OPEN
     @GetMapping
-    public List<MatchDto> findAll(@RequestParam(required = false) Long sportId, @RequestParam(required = false) MatchStatus status) {
+    public List<MatchDto> findAll(@RequestParam(required = false) Long sportId,
+                                  @RequestParam(required = false) MatchStatus status) {
         return matchApplicationService.findFiltered(sportId, status);
     }
 
@@ -50,24 +53,30 @@ public class MatchController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // TODO: organizerId / playerId да се земат од логираниот играч (JWT) наместо од query param
+    // организаторот е најавениот играч (од токенот), не query param
     @PostMapping
-    public ResponseEntity<MatchDto> create(@RequestParam Long organizerId, @Valid @RequestBody CreateMatchDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.create(organizerId, dto));
+    public ResponseEntity<MatchDto> create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateMatchDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.create(userId(jwt), dto));
     }
 
     @PostMapping("/{id}/join")
-    public MatchDto join(@PathVariable Long id, @RequestParam Long playerId) {
-        return matchApplicationService.join(id, playerId);
+    public MatchDto join(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return matchApplicationService.join(id, userId(jwt));
     }
 
     @PostMapping("/{id}/leave")
-    public MatchDto leave(@PathVariable Long id, @RequestParam Long playerId) {
-        return matchApplicationService.leave(id, playerId);
+    public MatchDto leave(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return matchApplicationService.leave(id, userId(jwt));
     }
 
+    // само организаторот може да го откаже
     @PostMapping("/{id}/cancel")
-    public MatchDto cancel(@PathVariable Long id) {
-        return matchApplicationService.cancel(id);
+    public MatchDto cancel(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return matchApplicationService.cancel(id, userId(jwt));
+    }
+
+    // "sub" од токенот = ID на најавениот корисник
+    private static Long userId(Jwt jwt) {
+        return Long.valueOf(jwt.getSubject());
     }
 }

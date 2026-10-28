@@ -20,7 +20,7 @@ public interface VenueApplicationService {
 
     VenueDto create(Long ownerId, CreateVenueDto dto);
 
-    VenueDto update(Long id, CreateVenueDto dto);
+    VenueDto update(Long id, Long ownerId, CreateVenueDto dto);
 
-    void deleteById(Long id);
+    void deleteById(Long id, Long ownerId);
 }

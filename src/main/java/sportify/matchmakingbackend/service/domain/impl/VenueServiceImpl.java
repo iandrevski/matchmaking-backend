@@ -3,6 +3,7 @@ package sportify.matchmakingbackend.service.domain.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sportify.matchmakingbackend.model.Venue;
+import sportify.matchmakingbackend.model.exceptions.ForbiddenOperationException;
 import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.repository.VenueRepository;
 import sportify.matchmakingbackend.service.domain.VenueService;
@@ -52,9 +53,8 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     @Transactional
-    public Venue update(Long id, Venue venue) {
-        Venue existing = venueRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Venue", id));
+    public Venue update(Long id, Long ownerId, Venue venue) {
+        Venue existing = getOwnedVenue(id, ownerId);
         existing.setName(venue.getName());
         existing.setCity(venue.getCity());
         existing.setMunicipality(venue.getMunicipality());
@@ -67,10 +67,17 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        if (!venueRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Venue", id);
+    public void deleteById(Long id, Long ownerId) {
+        venueRepository.delete(getOwnedVenue(id, ownerId));
+    }
+
+    // теренот мора да постои И да му припаѓа на тој партнер
+    private Venue getOwnedVenue(Long id, Long ownerId) {
+        Venue venue = venueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Venue", id));
+        if (!venue.getOwner().getId().equals(ownerId)) {
+            throw new ForbiddenOperationException("You can only manage your own venues");
         }
-        venueRepository.deleteById(id);
+        return venue;
     }
 }

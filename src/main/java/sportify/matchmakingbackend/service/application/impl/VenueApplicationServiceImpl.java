@@ -74,7 +74,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
 
     @Override
     @Transactional
-    public VenueDto update(Long id, CreateVenueDto dto) {
+    public VenueDto update(Long id, Long ownerId, CreateVenueDto dto) {
         Venue venue = new Venue();
         venue.setName(dto.name());
         venue.setCity(dto.city());
@@ -84,13 +84,12 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
         venue.setLongitude(dto.longitude());
         venue.setSports(findSports(dto.sportIds()));
 
-        return VenueDto.from(venueService.update(id, venue));
-    }
+        return VenueDto.from(venueService.update(id, ownerId, venue));    }
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        venueService.deleteById(id);
+    public void deleteById(Long id, Long ownerId) {
+        venueService.deleteById(id, ownerId);
     }
 
     private Set<Sport> findSports(List<Long> sportIds) {

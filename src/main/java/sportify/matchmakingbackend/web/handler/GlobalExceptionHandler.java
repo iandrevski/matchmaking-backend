@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import sportify.matchmakingbackend.dto.ApiError;
+import sportify.matchmakingbackend.model.exceptions.ForbiddenOperationException;
 import sportify.matchmakingbackend.model.exceptions.InvalidOperationException;
 import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import sportify.matchmakingbackend.model.exceptions.InvalidCredentialsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,6 +30,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidOperationException.class)
     public ResponseEntity<ApiError> handleInvalidOperation(InvalidOperationException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     // @Valid на @RequestBody — враќа грешка по поле за да се прикаже во формата
@@ -61,5 +68,10 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ApiError> build(HttpStatus status, String message) {
         return ResponseEntity.status(status)
                 .body(ApiError.of(status.value(), status.getReasonPhrase(), message));
+    }
+
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiError> handleForbidden(ForbiddenOperationException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 }

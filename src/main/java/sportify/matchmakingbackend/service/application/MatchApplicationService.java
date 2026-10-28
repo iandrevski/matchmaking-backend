@@ -27,7 +27,7 @@ public interface MatchApplicationService {
 
     MatchDto leave(Long matchId, Long playerId);
 
-    MatchDto cancel(Long matchId);
+    MatchDto cancel(Long matchId, Long requesterId);
 
     List<MatchDto> findFiltered(Long sportId, MatchStatus status);
 }

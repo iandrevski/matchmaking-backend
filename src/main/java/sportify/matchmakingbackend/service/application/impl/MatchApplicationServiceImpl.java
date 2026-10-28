@@ -94,8 +94,8 @@ public class MatchApplicationServiceImpl implements MatchApplicationService {
 
     @Override
     @Transactional
-    public MatchDto cancel(Long matchId) {
-        return MatchDto.from(matchService.cancel(matchId));
+    public MatchDto cancel(Long matchId, Long requesterId) {
+        return MatchDto.from(matchService.cancel(matchId, requesterId));
     }
 
     @Override
