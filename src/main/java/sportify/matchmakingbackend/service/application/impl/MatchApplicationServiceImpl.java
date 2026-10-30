@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sportify.matchmakingbackend.dto.CreateMatchDto;
 import sportify.matchmakingbackend.dto.MatchDto;
+import sportify.matchmakingbackend.dto.NearbyMatchDto;
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.Player;
 import sportify.matchmakingbackend.model.Sport;
@@ -16,6 +17,8 @@ import sportify.matchmakingbackend.service.domain.PlayerService;
 import sportify.matchmakingbackend.service.domain.SportService;
 import sportify.matchmakingbackend.service.domain.VenueService;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,5 +104,28 @@ public class MatchApplicationServiceImpl implements MatchApplicationService {
     @Override
     public List<MatchDto> findFiltered(Long sportId, MatchStatus status) {
         return MatchDto.from(matchService.findFiltered(sportId, status));
+    }
+
+    @Override
+    public List<NearbyMatchDto> findNearby(double lat, double lng, double radiusKm) {
+        LocalDateTime now = LocalDateTime.now();
+        return matchService.findByStatus(MatchStatus.OPEN).stream()
+                .filter(match -> match.getDateFrom().isAfter(now))
+                .filter(match -> match.getVenue().getLatitude() != null && match.getVenue().getLongitude() != null)
+                .map(match -> new NearbyMatchDto(
+                        MatchDto.from(match),
+                        distanceKm(lat, lng, match.getVenue().getLatitude(), match.getVenue().getLongitude())))
+                .filter(nearby -> nearby.distanceKm() <= radiusKm)
+                .sorted(Comparator.comparingDouble(NearbyMatchDto::distanceKm))
+                .toList();
+    }
+
+    // Haversine: растојание меѓу две точки на Земјата, во километри
+    private static double distanceKm(double lat1, double lng1, double lat2, double lng2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.pow(Math.sin(dLat / 2), 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.pow(Math.sin(dLng / 2), 2);
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }
