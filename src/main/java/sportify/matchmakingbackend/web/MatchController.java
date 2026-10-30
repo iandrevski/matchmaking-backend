@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import sportify.matchmakingbackend.dto.CreateMatchDto;
 import sportify.matchmakingbackend.dto.MatchDto;
+import sportify.matchmakingbackend.dto.NearbyMatchDto;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
 import sportify.matchmakingbackend.service.application.MatchApplicationService;
 
@@ -78,5 +79,13 @@ public class MatchController {
     // "sub" од токенот = ID на најавениот корисник
     private static Long userId(Jwt jwt) {
         return Long.valueOf(jwt.getSubject());
+    }
+
+    // GET /api/matches/nearby?lat=41.99&lng=21.43&radiusKm=10
+    @GetMapping("/nearby")
+    public List<NearbyMatchDto> findNearby(@RequestParam double lat,
+                                           @RequestParam double lng,
+                                           @RequestParam(defaultValue = "10") double radiusKm) {
+        return matchApplicationService.findNearby(lat, lng, radiusKm);
     }
 }

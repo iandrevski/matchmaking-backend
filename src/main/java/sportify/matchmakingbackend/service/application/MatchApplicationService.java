@@ -2,6 +2,7 @@ package sportify.matchmakingbackend.service.application;
 
 import sportify.matchmakingbackend.dto.CreateMatchDto;
 import sportify.matchmakingbackend.dto.MatchDto;
+import sportify.matchmakingbackend.dto.NearbyMatchDto;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface MatchApplicationService {
     MatchDto cancel(Long matchId, Long requesterId);
 
     List<MatchDto> findFiltered(Long sportId, MatchStatus status);
+
+    List<NearbyMatchDto> findNearby(double lat, double lng, double radiusKm);
 }
