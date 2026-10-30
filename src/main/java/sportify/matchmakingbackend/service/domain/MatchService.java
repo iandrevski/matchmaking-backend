@@ -29,4 +29,6 @@ public interface MatchService {
     Match cancel(Long matchId, Long requesterId);
 
     List<Match> findFiltered(Long sportId, MatchStatus status);
+
+    int finishPastMatches();
 }

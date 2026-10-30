@@ -9,6 +9,7 @@ import sportify.matchmakingbackend.model.enums.MatchStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.jpa.repository.Modifying;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Long> {
@@ -37,4 +38,15 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
                                    @Param("dateTo") LocalDateTime dateTo);
 
     List<Match> findBySportId(Long sportId);
+
+    // OPEN/FULL натпревари чие време завршило → FINISHED (еден UPDATE за сите)
+    @Modifying
+    @Query("""
+        update Match m
+        set m.status = sportify.matchmakingbackend.model.enums.MatchStatus.FINISHED
+        where m.dateTo < :now
+          and m.status in (sportify.matchmakingbackend.model.enums.MatchStatus.OPEN,
+                           sportify.matchmakingbackend.model.enums.MatchStatus.FULL)
+        """)
+    int finishPastMatches(@Param("now") LocalDateTime now);
 }

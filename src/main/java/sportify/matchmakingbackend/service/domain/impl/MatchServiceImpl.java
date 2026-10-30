@@ -14,6 +14,7 @@ import sportify.matchmakingbackend.service.domain.MatchService;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -89,6 +90,9 @@ public class MatchServiceImpl implements MatchService {
         if (match.getStatus() != MatchStatus.OPEN) {
             throw new InvalidOperationException("Match is not open for joining");
         }
+        if (!match.getDateFrom().isAfter(LocalDateTime.now())) {
+            throw new InvalidOperationException("Match has already started");
+        }
         boolean alreadyJoined = match.getParticipants().stream()
                 .anyMatch(p -> p.getId().equals(playerId));
         if (alreadyJoined) {
@@ -152,5 +156,11 @@ public class MatchServiceImpl implements MatchService {
     private Match getMatch(Long id) {
         return matchRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match", id));
+    }
+
+    @Override
+    @Transactional
+    public int finishPastMatches() {
+        return matchRepository.finishPastMatches(LocalDateTime.now());
     }
 }
