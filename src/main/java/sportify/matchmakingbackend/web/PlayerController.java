@@ -27,6 +27,14 @@ public class PlayerController {
         return playerApplicationService.findAll();
     }
 
+    // профилот на најавениот играч
+    @GetMapping("/me")
+    public ResponseEntity<PlayerDto> me(@AuthenticationPrincipal Jwt jwt) {
+        return playerApplicationService.findById(userId(jwt))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PlayerDto> findById(@PathVariable Long id) {
         return playerApplicationService.findById(id)
