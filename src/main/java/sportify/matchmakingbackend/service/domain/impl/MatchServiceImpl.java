@@ -11,7 +11,13 @@ import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.repository.MatchRepository;
 import sportify.matchmakingbackend.repository.PlayerRepository;
 import sportify.matchmakingbackend.service.domain.MatchService;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
@@ -141,16 +147,41 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<Match> findFiltered(Long sportId, MatchStatus status) {
-        if (sportId != null && status != null) {
-            return matchRepository.findBySportIdAndStatus(sportId, status);
-        } else if (sportId != null) {
-            return matchRepository.findBySportId(sportId);
-        } else if (status != null) {
-            return matchRepository.findByStatus(status);
-        } else {
-            return matchRepository.findAll();
-        }
+    public List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to) {
+        Specification<Match> filters = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.notEqual(root.get("status"), MatchStatus.CANCELLED));
+            predicates.add(cb.greaterThanOrEqualTo(root.get("dateFrom"), from.atStartOfDay()));
+            predicates.add(cb.lessThan(root.get("dateFrom"), to.plusDays(1).atStartOfDay()));
+            if (sportId != null) {
+                predicates.add(cb.equal(root.get("sport").get("id"), sportId));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return matchRepository.findAll(filters).stream()
+                .map(match -> match.getDateFrom().toLocalDate())
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    @Override
+    public List<Match> findFiltered(Long sportId, MatchStatus status, LocalDate date) {
+        Specification<Match> filters = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (sportId != null) {
+                predicates.add(cb.equal(root.get("sport").get("id"), sportId));
+            }
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+            if (date != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("dateFrom"), date.atStartOfDay()));
+                predicates.add(cb.lessThan(root.get("dateFrom"), date.plusDays(1).atStartOfDay()));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return matchRepository.findAll(filters, Sort.by("dateFrom"));
     }
 
     private Match getMatch(Long id) {

@@ -5,6 +5,7 @@ import sportify.matchmakingbackend.dto.MatchDto;
 import sportify.matchmakingbackend.dto.NearbyMatchDto;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,9 @@ public interface MatchApplicationService {
 
     MatchDto cancel(Long matchId, Long requesterId);
 
-    List<MatchDto> findFiltered(Long sportId, MatchStatus status);
+    List<MatchDto> findFiltered(Long sportId, MatchStatus status, LocalDate date);
+
+    List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to);
 
     List<NearbyMatchDto> findNearby(double lat, double lng, double radiusKm);
 }

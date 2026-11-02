@@ -11,7 +11,8 @@ import sportify.matchmakingbackend.dto.MatchDto;
 import sportify.matchmakingbackend.dto.NearbyMatchDto;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
 import sportify.matchmakingbackend.service.application.MatchApplicationService;
-
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -24,11 +25,21 @@ public class MatchController {
         this.matchApplicationService = matchApplicationService;
     }
 
-    // GET /api/matches | ?sportId=1 | ?status=OPEN | ?sportId=1&status=OPEN
+    // GET /api/matches?sportId=1&status=OPEN&date=2026-11-05
     @GetMapping
     public List<MatchDto> findAll(@RequestParam(required = false) Long sportId,
-                                  @RequestParam(required = false) MatchStatus status) {
-        return matchApplicationService.findFiltered(sportId, status);
+                                  @RequestParam(required = false) MatchStatus status,
+                                  @RequestParam(required = false)
+                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return matchApplicationService.findFiltered(sportId, status, date);
+    }
+
+    // GET /api/matches/days?from=2026-11-01&to=2026-11-30
+    @GetMapping("/days")
+    public List<LocalDate> findMatchDays(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                         @RequestParam(required = false) Long sportId) {
+        return matchApplicationService.findMatchDays(sportId, from, to);
     }
 
     // GET /api/matches/open?sportId=1 — натпревари на кои може да се приклучи

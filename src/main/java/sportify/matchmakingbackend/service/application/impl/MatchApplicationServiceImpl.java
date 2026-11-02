@@ -17,6 +17,7 @@ import sportify.matchmakingbackend.service.domain.PlayerService;
 import sportify.matchmakingbackend.service.domain.SportService;
 import sportify.matchmakingbackend.service.domain.VenueService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -102,8 +103,13 @@ public class MatchApplicationServiceImpl implements MatchApplicationService {
     }
 
     @Override
-    public List<MatchDto> findFiltered(Long sportId, MatchStatus status) {
-        return MatchDto.from(matchService.findFiltered(sportId, status));
+    public List<MatchDto> findFiltered(Long sportId, MatchStatus status, LocalDate date) {
+        return MatchDto.from(matchService.findFiltered(sportId, status, date));
+    }
+
+    @Override
+    public List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to) {
+        return matchService.findMatchDays(sportId, from, to);
     }
 
     @Override

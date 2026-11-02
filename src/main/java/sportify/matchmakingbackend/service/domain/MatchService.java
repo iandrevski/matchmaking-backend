@@ -2,6 +2,7 @@ package sportify.matchmakingbackend.service.domain;
 
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
+import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,9 @@ public interface MatchService {
 
     Match cancel(Long matchId, Long requesterId);
 
-    List<Match> findFiltered(Long sportId, MatchStatus status);
+    List<Match> findFiltered(Long sportId, MatchStatus status, LocalDate date);
+
+    List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to);
 
     int finishPastMatches();
 }
