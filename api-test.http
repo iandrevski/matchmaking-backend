@@ -92,3 +92,14 @@ Authorization: Bearer {{token}}
 ### Ana откажува туѓ натпревар → 403
 POST http://localhost:8090/api/matches/1/cancel
 Authorization: Bearer {{token}}
+
+POST http://localhost:8090/api/matches
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "dateFrom": "2026-11-10T18:00:00",
+  "dateTo": "2026-11-10T19:30:00",
+  "sportId": 1,
+  "venueId": 1
+}
