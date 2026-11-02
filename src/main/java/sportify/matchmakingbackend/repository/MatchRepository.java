@@ -6,13 +6,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 
 @Repository
-public interface MatchRepository extends JpaRepository<Match, Long> {
+public interface MatchRepository extends JpaRepository<Match, Long>, JpaSpecificationExecutor<Match> {
 
     List<Match> findByStatus(MatchStatus status);
 
