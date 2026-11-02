@@ -2,6 +2,8 @@ package sportify.matchmakingbackend.dto;
 
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
+import sportify.matchmakingbackend.model.Player;
+import java.util.Comparator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +19,8 @@ public record MatchDto(
         Long organizerId,
         String organizerUsername,
         int participantsCount,
-        List<Long> participantIds
+        List<Long> participantIds,
+        List<ParticipantDto> participants
 ) {
 
     public static MatchDto from(Match match) {
@@ -32,7 +35,11 @@ public record MatchDto(
                 match.getOrganizer() != null ? match.getOrganizer().getId() : null,
                 match.getOrganizer() != null ? match.getOrganizer().getUsername() : null,
                 match.getParticipants().size(),
-                match.getParticipants().stream().map(participant -> participant.getId()).toList()
+                match.getParticipants().stream().map(participant -> participant.getId()).toList(),
+                match.getParticipants().stream()
+                        .sorted(Comparator.comparing(Player::getId))
+                        .map(ParticipantDto::from)
+                        .toList()
         );}
 
     public static List<MatchDto> from(List<Match> matches) {
