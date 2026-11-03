@@ -61,6 +61,7 @@ public class VenueServiceImpl implements VenueService {
         existing.setAddress(venue.getAddress());
         existing.setLatitude(venue.getLatitude());
         existing.setLongitude(venue.getLongitude());
+        existing.setPricePerHour(venue.getPricePerHour());
         existing.setSports(venue.getSports());
         return venueRepository.save(existing);
     }

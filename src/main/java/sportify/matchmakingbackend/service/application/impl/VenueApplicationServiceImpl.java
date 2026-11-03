@@ -67,6 +67,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
         Venue venue = new Venue(dto.name(), dto.city(), dto.municipality(), dto.address(), owner);
         venue.setLatitude(dto.latitude());
         venue.setLongitude(dto.longitude());
+        venue.setPricePerHour(dto.pricePerHour());
         venue.setSports(findSports(dto.sportIds()));
 
         return VenueDto.from(venueService.create(venue));
@@ -82,6 +83,7 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
         venue.setAddress(dto.address());
         venue.setLatitude(dto.latitude());
         venue.setLongitude(dto.longitude());
+        venue.setPricePerHour(dto.pricePerHour());
         venue.setSports(findSports(dto.sportIds()));
 
         return VenueDto.from(venueService.update(id, ownerId, venue));    }

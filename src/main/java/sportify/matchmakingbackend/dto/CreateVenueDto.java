@@ -2,6 +2,7 @@ package sportify.matchmakingbackend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public record CreateVenueDto(
         String address,
         Double latitude,
         Double longitude,
-        @NotEmpty List<Long> sportIds
+        @NotEmpty List<Long> sportIds,
+        @PositiveOrZero Integer pricePerHour
 ) {
 }

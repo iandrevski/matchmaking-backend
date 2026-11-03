@@ -12,6 +12,7 @@ public record VenueDto(
         String address,
         Double latitude,
         Double longitude,
+        Integer pricePerHour,
         Long ownerId,
         List<SportDto> sports
 ) {
@@ -25,6 +26,7 @@ public record VenueDto(
                 venue.getAddress(),
                 venue.getLatitude(),
                 venue.getLongitude(),
+                venue.getPricePerHour(),
                 venue.getOwner().getId(),
                 SportDto.from(venue.getSports())
         );
