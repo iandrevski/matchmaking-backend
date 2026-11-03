@@ -2,9 +2,11 @@ package sportify.matchmakingbackend.service.application.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sportify.matchmakingbackend.dto.FavoritesDto;
 import sportify.matchmakingbackend.dto.LocationDto;
 import sportify.matchmakingbackend.dto.PlayerDto;
 import sportify.matchmakingbackend.dto.UpdatePlayerDto;
+import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.service.application.PlayerApplicationService;
 import sportify.matchmakingbackend.service.domain.PlayerService;
 
@@ -46,5 +48,35 @@ public class PlayerApplicationServiceImpl implements PlayerApplicationService {
     @Transactional
     public PlayerDto updateLocation(Long id, LocationDto dto) {
         return PlayerDto.from(playerService.updateLocation(id, dto.lat(), dto.lng()));
+    }
+
+    @Override
+    public FavoritesDto getFavorites(Long playerId) {
+        return FavoritesDto.from(playerService.findById(playerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Player", playerId)));
+    }
+
+    @Override
+    @Transactional
+    public FavoritesDto addFavoriteVenue(Long playerId, Long venueId) {
+        return FavoritesDto.from(playerService.addFavoriteVenue(playerId, venueId));
+    }
+
+    @Override
+    @Transactional
+    public FavoritesDto removeFavoriteVenue(Long playerId, Long venueId) {
+        return FavoritesDto.from(playerService.removeFavoriteVenue(playerId, venueId));
+    }
+
+    @Override
+    @Transactional
+    public FavoritesDto addFavoriteMatch(Long playerId, Long matchId) {
+        return FavoritesDto.from(playerService.addFavoriteMatch(playerId, matchId));
+    }
+
+    @Override
+    @Transactional
+    public FavoritesDto removeFavoriteMatch(Long playerId, Long matchId) {
+        return FavoritesDto.from(playerService.removeFavoriteMatch(playerId, matchId));
     }
 }

@@ -16,4 +16,12 @@ public interface PlayerService {
     Player updateProfile(Long id, Player player);
 
     Player updateLocation(Long id, Double lat, Double lng);
+
+    Player addFavoriteVenue(Long playerId, Long venueId);
+
+    Player removeFavoriteVenue(Long playerId, Long venueId);
+
+    Player addFavoriteMatch(Long playerId, Long matchId);
+
+    Player removeFavoriteMatch(Long playerId, Long matchId);
 }

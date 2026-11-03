@@ -72,7 +72,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     @Transactional
     public void deleteById(Long id, Long ownerId) {
-        venueRepository.delete(getOwnedVenue(id, ownerId));
+        Venue venue = getOwnedVenue(id, ownerId);
+        venueRepository.deleteFavoriteLinks(id);
+        venueRepository.delete(venue);
     }
 
     @Override
