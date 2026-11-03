@@ -29,6 +29,8 @@ public class Venue {
     private Double latitude;
     private Double longitude;
 
+    private Integer pricePerHour;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "partner_id")
     private Partner owner;
