@@ -13,6 +13,7 @@ public record VenueDto(
         Double latitude,
         Double longitude,
         Integer pricePerHour,
+        List<String> photoUrls,
         Long ownerId,
         List<SportDto> sports
 ) {
@@ -27,6 +28,7 @@ public record VenueDto(
                 venue.getLatitude(),
                 venue.getLongitude(),
                 venue.getPricePerHour(),
+                venue.getPhotos().stream().map(fileName -> "/uploads/venues/" + fileName).toList(),
                 venue.getOwner().getId(),
                 SportDto.from(venue.getSports())
         );

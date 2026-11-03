@@ -2,6 +2,7 @@ package sportify.matchmakingbackend.service.application.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
 import sportify.matchmakingbackend.model.Partner;
@@ -10,6 +11,7 @@ import sportify.matchmakingbackend.model.Venue;
 import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.service.application.VenueApplicationService;
 import sportify.matchmakingbackend.service.domain.PartnerService;
+import sportify.matchmakingbackend.service.domain.PhotoStorageService;
 import sportify.matchmakingbackend.service.domain.SportService;
 import sportify.matchmakingbackend.service.domain.VenueService;
 
@@ -23,11 +25,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class VenueApplicationServiceImpl implements VenueApplicationService {
 
+    private final PhotoStorageService photoStorageService;
     private final VenueService venueService;
     private final PartnerService partnerService;
     private final SportService sportService;
 
-    public VenueApplicationServiceImpl(VenueService venueService, PartnerService partnerService, SportService sportService) {
+    public VenueApplicationServiceImpl(PhotoStorageService photoStorageService, VenueService venueService, PartnerService partnerService, SportService sportService) {
+        this.photoStorageService = photoStorageService;
         this.venueService = venueService;
         this.partnerService = partnerService;
         this.sportService = sportService;
@@ -92,6 +96,27 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
     @Transactional
     public void deleteById(Long id, Long ownerId) {
         venueService.deleteById(id, ownerId);
+    }
+
+    @Override
+    @Transactional
+    public VenueDto addPhoto(Long id, Long ownerId, MultipartFile file) {
+        String fileName = photoStorageService.store(file);
+        try {
+            return VenueDto.from(venueService.addPhoto(id, ownerId, fileName));
+        } catch (RuntimeException e) {
+            // теренот не е твој или има премногу слики → фајлот не смее да остане
+            photoStorageService.delete(fileName);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public VenueDto removePhoto(Long id, Long ownerId, String fileName) {
+        VenueDto venue = VenueDto.from(venueService.removePhoto(id, ownerId, fileName));
+        photoStorageService.delete(fileName);
+        return venue;
     }
 
     private Set<Sport> findSports(List<Long> sportIds) {

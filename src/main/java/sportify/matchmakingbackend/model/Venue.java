@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,6 +32,13 @@ public class Venue {
     private Double longitude;
 
     private Integer pricePerHour;
+
+    // имиња на фајловите со слики, по редослед на прикачување
+    @ElementCollection
+    @CollectionTable(name = "venue_photos", joinColumns = @JoinColumn(name = "venue_id"))
+    @OrderColumn(name = "position")
+    @Column(name = "file_name", nullable = false)
+    private List<String> photos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "partner_id")

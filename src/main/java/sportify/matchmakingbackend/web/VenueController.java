@@ -2,10 +2,12 @@ package sportify.matchmakingbackend.web;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
 import sportify.matchmakingbackend.service.application.VenueApplicationService;
@@ -62,6 +64,19 @@ public class VenueController {
     public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         venueApplicationService.deleteById(id, userId(jwt));
         return ResponseEntity.noContent().build();
+    }
+
+    // multipart/form-data со поле "file"
+    @PostMapping(value = "/{id}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public VenueDto addPhoto(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt,
+                             @RequestParam("file") MultipartFile file) {
+        return venueApplicationService.addPhoto(id, userId(jwt), file);
+    }
+
+    @DeleteMapping("/{id}/photos/{fileName}")
+    public VenueDto removePhoto(@PathVariable Long id, @PathVariable String fileName,
+                                @AuthenticationPrincipal Jwt jwt) {
+        return venueApplicationService.removePhoto(id, userId(jwt), fileName);
     }
 
     private static Long userId(Jwt jwt) {

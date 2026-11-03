@@ -50,6 +50,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/venues/**").hasRole("OWNER")
                         // креирање, join, leave, cancel натпревар: само играч
                         .requestMatchers(HttpMethod.POST, "/api/matches/**").hasRole("USER")
+                        // сликите од терените се јавни
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        // грешките (на пр. 404) да не се враќаат како 401
+                        .requestMatchers("/error").permitAll()
                         // сè останато (/api/auth/me, /api/players/**...) бара најава
                         .anyRequest().authenticated())
                 // Spring сам го проверува "Authorization: Bearer <token>" со JwtDecoder-от од JwtConfig

@@ -22,4 +22,8 @@ public interface VenueService {
     Venue update(Long id, Long ownerId, Venue venue);
 
     void deleteById(Long id, Long ownerId);
+
+    Venue addPhoto(Long id, Long ownerId, String fileName);
+
+    Venue removePhoto(Long id, Long ownerId, String fileName);
 }

@@ -1,5 +1,6 @@
 package sportify.matchmakingbackend.service.application;
 
+import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
 
@@ -23,4 +24,8 @@ public interface VenueApplicationService {
     VenueDto update(Long id, Long ownerId, CreateVenueDto dto);
 
     void deleteById(Long id, Long ownerId);
+
+    VenueDto addPhoto(Long id, Long ownerId, MultipartFile file);
+
+    VenueDto removePhoto(Long id, Long ownerId, String fileName);
 }
