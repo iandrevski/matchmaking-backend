@@ -3,6 +3,7 @@ package sportify.matchmakingbackend.service.application;
 import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
+import sportify.matchmakingbackend.dto.VenueStatsDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,4 +29,6 @@ public interface VenueApplicationService {
     VenueDto addPhoto(Long id, Long ownerId, MultipartFile file);
 
     VenueDto removePhoto(Long id, Long ownerId, String fileName);
+
+    VenueStatsDto getStats(Long id, Long ownerId);
 }

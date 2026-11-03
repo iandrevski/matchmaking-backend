@@ -5,15 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
+import sportify.matchmakingbackend.dto.VenueStatsDto;
 import sportify.matchmakingbackend.model.Partner;
 import sportify.matchmakingbackend.model.Sport;
 import sportify.matchmakingbackend.model.Venue;
 import sportify.matchmakingbackend.model.exceptions.ResourceNotFoundException;
 import sportify.matchmakingbackend.service.application.VenueApplicationService;
-import sportify.matchmakingbackend.service.domain.PartnerService;
-import sportify.matchmakingbackend.service.domain.PhotoStorageService;
-import sportify.matchmakingbackend.service.domain.SportService;
-import sportify.matchmakingbackend.service.domain.VenueService;
+import sportify.matchmakingbackend.service.domain.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +27,14 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
     private final VenueService venueService;
     private final PartnerService partnerService;
     private final SportService sportService;
+    private final MatchService matchService;
 
-    public VenueApplicationServiceImpl(PhotoStorageService photoStorageService, VenueService venueService, PartnerService partnerService, SportService sportService) {
+    public VenueApplicationServiceImpl(PhotoStorageService photoStorageService, VenueService venueService, PartnerService partnerService, SportService sportService, MatchService matchService) {
         this.photoStorageService = photoStorageService;
         this.venueService = venueService;
         this.partnerService = partnerService;
         this.sportService = sportService;
+        this.matchService = matchService;
     }
 
     @Override
@@ -124,5 +124,11 @@ public class VenueApplicationServiceImpl implements VenueApplicationService {
                 .map(sportId -> sportService.findById(sportId)
                         .orElseThrow(() -> new ResourceNotFoundException("Sport", sportId)))
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    @Override
+    public VenueStatsDto getStats(Long id, Long ownerId) {
+        Venue venue = venueService.findOwned(id, ownerId);
+        return VenueStatsDto.from(venue, matchService.findByVenue(id));
     }
 }

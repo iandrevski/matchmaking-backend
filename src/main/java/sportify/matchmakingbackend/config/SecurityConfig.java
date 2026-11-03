@@ -42,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // register и login се јавни
                         .requestMatchers("/api/auth/register/**", "/api/auth/login").permitAll()
+                        // статистиката на терен е само за партнери (мора ПРЕД јавниот GET подолу)
+                        .requestMatchers(HttpMethod.GET, "/api/venues/*/stats").hasRole("OWNER")
                         // разгледување (GET) е јавно
                         .requestMatchers(HttpMethod.GET, "/api/sports/**", "/api/venues/**", "/api/matches/**").permitAll()
                         // менување спортови: само админ

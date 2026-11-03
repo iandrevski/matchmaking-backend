@@ -26,4 +26,7 @@ public interface VenueService {
     Venue addPhoto(Long id, Long ownerId, String fileName);
 
     Venue removePhoto(Long id, Long ownerId, String fileName);
+
+    // теренот, само ако му припаѓа на тој партнер (инаку 403)
+    Venue findOwned(Long id, Long ownerId);
 }
