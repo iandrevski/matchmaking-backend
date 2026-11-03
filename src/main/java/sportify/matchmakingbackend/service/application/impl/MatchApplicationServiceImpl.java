@@ -103,13 +103,13 @@ public class MatchApplicationServiceImpl implements MatchApplicationService {
     }
 
     @Override
-    public List<MatchDto> findFiltered(Long sportId, MatchStatus status, LocalDate date) {
-        return MatchDto.from(matchService.findFiltered(sportId, status, date));
+    public List<MatchDto> findFiltered(Long sportId, Long venueId, MatchStatus status, LocalDate date) {
+        return MatchDto.from(matchService.findFiltered(sportId, venueId, status, date));
     }
 
     @Override
-    public List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to) {
-        return matchService.findMatchDays(sportId, from, to);
+    public List<LocalDate> findMatchDays(Long sportId, Long venueId, LocalDate from, LocalDate to) {
+        return matchService.findMatchDays(sportId, venueId, from, to);
     }
 
     @Override
