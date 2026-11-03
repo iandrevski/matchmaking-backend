@@ -1,5 +1,6 @@
 package sportify.matchmakingbackend.service.application;
 
+import sportify.matchmakingbackend.dto.FavoritesDto;
 import sportify.matchmakingbackend.dto.LocationDto;
 import sportify.matchmakingbackend.dto.PlayerDto;
 import sportify.matchmakingbackend.dto.UpdatePlayerDto;
@@ -18,4 +19,14 @@ public interface PlayerApplicationService {
     PlayerDto updateProfile(Long id, UpdatePlayerDto dto);
 
     PlayerDto updateLocation(Long id, LocationDto dto);
+
+    FavoritesDto getFavorites(Long playerId);
+
+    FavoritesDto addFavoriteVenue(Long playerId, Long venueId);
+
+    FavoritesDto removeFavoriteVenue(Long playerId, Long venueId);
+
+    FavoritesDto addFavoriteMatch(Long playerId, Long matchId);
+
+    FavoritesDto removeFavoriteMatch(Long playerId, Long matchId);
 }

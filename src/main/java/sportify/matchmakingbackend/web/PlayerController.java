@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import sportify.matchmakingbackend.dto.FavoritesDto;
 import sportify.matchmakingbackend.dto.LocationDto;
 import sportify.matchmakingbackend.dto.PlayerDto;
 import sportify.matchmakingbackend.dto.UpdatePlayerDto;
@@ -56,5 +57,31 @@ public class PlayerController {
 
     private static Long userId(Jwt jwt) {
         return Long.valueOf(jwt.getSubject());
+    }
+
+    // ---------- омилени ----------
+    @GetMapping("/me/favorites")
+    public FavoritesDto getFavorites(@AuthenticationPrincipal Jwt jwt) {
+        return playerApplicationService.getFavorites(userId(jwt));
+    }
+
+    @PutMapping("/me/favorites/venues/{venueId}")
+    public FavoritesDto addFavoriteVenue(@AuthenticationPrincipal Jwt jwt, @PathVariable Long venueId) {
+        return playerApplicationService.addFavoriteVenue(userId(jwt), venueId);
+    }
+
+    @DeleteMapping("/me/favorites/venues/{venueId}")
+    public FavoritesDto removeFavoriteVenue(@AuthenticationPrincipal Jwt jwt, @PathVariable Long venueId) {
+        return playerApplicationService.removeFavoriteVenue(userId(jwt), venueId);
+    }
+
+    @PutMapping("/me/favorites/matches/{matchId}")
+    public FavoritesDto addFavoriteMatch(@AuthenticationPrincipal Jwt jwt, @PathVariable Long matchId) {
+        return playerApplicationService.addFavoriteMatch(userId(jwt), matchId);
+    }
+
+    @DeleteMapping("/me/favorites/matches/{matchId}")
+    public FavoritesDto removeFavoriteMatch(@AuthenticationPrincipal Jwt jwt, @PathVariable Long matchId) {
+        return playerApplicationService.removeFavoriteMatch(userId(jwt), matchId);
     }
 }
