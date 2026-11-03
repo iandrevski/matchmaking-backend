@@ -106,5 +106,9 @@ public class VenueServiceImpl implements VenueService {
         return venue;
     }
 
+    @Override
+    public Venue findOwned(Long id, Long ownerId) {
+        return getOwnedVenue(id, ownerId);
+    }
 
 }

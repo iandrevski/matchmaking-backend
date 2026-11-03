@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sportify.matchmakingbackend.dto.CreateVenueDto;
 import sportify.matchmakingbackend.dto.VenueDto;
+import sportify.matchmakingbackend.dto.VenueStatsDto;
 import sportify.matchmakingbackend.service.application.VenueApplicationService;
 
 import java.util.List;
@@ -81,5 +82,11 @@ public class VenueController {
 
     private static Long userId(Jwt jwt) {
         return Long.valueOf(jwt.getSubject());
+    }
+
+    // само сопственикот (правилото во SecurityConfig + проверка во сервисот)
+    @GetMapping("/{id}/stats")
+    public VenueStatsDto getStats(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return venueApplicationService.getStats(id, userId(jwt));
     }
 }
