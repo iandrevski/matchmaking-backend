@@ -147,7 +147,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to) {
+    public List<LocalDate> findMatchDays(Long sportId, Long venueId, LocalDate from, LocalDate to) {
         Specification<Match> filters = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.notEqual(root.get("status"), MatchStatus.CANCELLED));
@@ -155,6 +155,9 @@ public class MatchServiceImpl implements MatchService {
             predicates.add(cb.lessThan(root.get("dateFrom"), to.plusDays(1).atStartOfDay()));
             if (sportId != null) {
                 predicates.add(cb.equal(root.get("sport").get("id"), sportId));
+            }
+            if (venueId != null) {
+                predicates.add(cb.equal(root.get("venue").get("id"), venueId));
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -166,11 +169,14 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<Match> findFiltered(Long sportId, MatchStatus status, LocalDate date) {
+    public List<Match> findFiltered(Long sportId, Long venueId, MatchStatus status, LocalDate date) {
         Specification<Match> filters = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (sportId != null) {
                 predicates.add(cb.equal(root.get("sport").get("id"), sportId));
+            }
+            if (venueId != null) {
+                predicates.add(cb.equal(root.get("venue").get("id"), venueId));
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));

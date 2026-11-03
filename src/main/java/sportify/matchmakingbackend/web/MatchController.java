@@ -25,21 +25,23 @@ public class MatchController {
         this.matchApplicationService = matchApplicationService;
     }
 
-    // GET /api/matches?sportId=1&status=OPEN&date=2026-11-05
+    // GET /api/matches?sportId=1&venueId=2&status=OPEN&date=2026-11-05
     @GetMapping
     public List<MatchDto> findAll(@RequestParam(required = false) Long sportId,
+                                  @RequestParam(required = false) Long venueId,
                                   @RequestParam(required = false) MatchStatus status,
                                   @RequestParam(required = false)
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return matchApplicationService.findFiltered(sportId, status, date);
+        return matchApplicationService.findFiltered(sportId, venueId, status, date);
     }
 
-    // GET /api/matches/days?from=2026-11-01&to=2026-11-30
+    // GET /api/matches/days?from=2026-11-01&to=2026-11-30&venueId=2
     @GetMapping("/days")
     public List<LocalDate> findMatchDays(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-                                         @RequestParam(required = false) Long sportId) {
-        return matchApplicationService.findMatchDays(sportId, from, to);
+                                         @RequestParam(required = false) Long sportId,
+                                         @RequestParam(required = false) Long venueId) {
+        return matchApplicationService.findMatchDays(sportId, venueId, from, to);
     }
 
     // GET /api/matches/open?sportId=1 — натпревари на кои може да се приклучи

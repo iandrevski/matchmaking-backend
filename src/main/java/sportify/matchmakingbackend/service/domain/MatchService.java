@@ -29,9 +29,9 @@ public interface MatchService {
 
     Match cancel(Long matchId, Long requesterId);
 
-    List<Match> findFiltered(Long sportId, MatchStatus status, LocalDate date);
+    List<Match> findFiltered(Long sportId, Long venueId, MatchStatus status, LocalDate date);
 
-    List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to);
+    List<LocalDate> findMatchDays(Long sportId, Long venueId, LocalDate from, LocalDate to);
 
     int finishPastMatches();
 }

@@ -31,9 +31,9 @@ public interface MatchApplicationService {
 
     MatchDto cancel(Long matchId, Long requesterId);
 
-    List<MatchDto> findFiltered(Long sportId, MatchStatus status, LocalDate date);
+    List<MatchDto> findFiltered(Long sportId, Long venueId, MatchStatus status, LocalDate date);
 
-    List<LocalDate> findMatchDays(Long sportId, LocalDate from, LocalDate to);
+    List<LocalDate> findMatchDays(Long sportId, Long venueId, LocalDate from, LocalDate to);
 
     List<NearbyMatchDto> findNearby(double lat, double lng, double radiusKm);
 }
