@@ -9,6 +9,7 @@ import sportify.matchmakingbackend.model.enums.MatchStatus;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 
@@ -50,4 +51,16 @@ public interface MatchRepository extends JpaRepository<Match, Long>, JpaSpecific
                            sportify.matchmakingbackend.model.enums.MatchStatus.FULL)
         """)
     int finishPastMatches(@Param("now") LocalDateTime now);
+
+    // истиот услов како finishPastMatches, за да знаеме КОИ натпревари се затвораат
+    @Query("""
+        select m.id from Match m
+        where m.dateTo < :now
+          and m.status in (sportify.matchmakingbackend.model.enums.MatchStatus.OPEN,
+                           sportify.matchmakingbackend.model.enums.MatchStatus.FULL)
+        """)
+    List<Long> findIdsToFinish(@Param("now") LocalDateTime now);
+
+    // за потсетникот „почнува наскоро“
+    List<Match> findByDateFromBetweenAndStatusIn(LocalDateTime from, LocalDateTime to, Collection<MatchStatus> statuses);
 }

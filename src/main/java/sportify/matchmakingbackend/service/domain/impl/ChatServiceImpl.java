@@ -1,7 +1,9 @@
 package sportify.matchmakingbackend.service.domain.impl;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sportify.matchmakingbackend.events.MatchEvents;
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.MatchMessage;
 import sportify.matchmakingbackend.model.Player;
@@ -22,10 +24,12 @@ public class ChatServiceImpl implements ChatService {
 
     private final MatchRepository matchRepository;
     private final MatchMessageRepository messageRepository;
+    private final ApplicationEventPublisher events;
 
-    public ChatServiceImpl(MatchRepository matchRepository, MatchMessageRepository messageRepository) {
+    public ChatServiceImpl(MatchRepository matchRepository, MatchMessageRepository messageRepository, ApplicationEventPublisher events) {
         this.matchRepository = matchRepository;
         this.messageRepository = messageRepository;
+        this.events = events;
     }
 
     @Override
@@ -48,8 +52,9 @@ public class ChatServiceImpl implements ChatService {
         if (match.getStatus() == MatchStatus.CANCELLED) {
             throw new InvalidOperationException("This match was cancelled, the chat is closed");
         }
-        return messageRepository.save(new MatchMessage(match, sender, text.trim()));
-    }
+        MatchMessage message = messageRepository.save(new MatchMessage(match, sender, text.trim()));
+        events.publishEvent(new MatchEvents.MessageSent(matchId, playerId, message.getText()));
+        return message;    }
 
     private Match getMatch(Long matchId) {
         return matchRepository.findById(matchId)
