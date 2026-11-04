@@ -103,3 +103,14 @@ Authorization: Bearer {{token}}
   "sportId": 1,
   "venueId": 1
 }
+
+### Оценки за теренот (јавно)
+GET http://localhost:8090/api/venues/1/reviews
+
+### Збир за marko
+GET http://localhost:8090/api/players/2/reviews/summary
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:8090/api/matches/11/reviews/mine
+Authorization: Bearer {{token}}
