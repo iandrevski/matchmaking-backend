@@ -1,7 +1,9 @@
 package sportify.matchmakingbackend.service.domain.impl;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sportify.matchmakingbackend.events.MatchEvents;
 import sportify.matchmakingbackend.model.Match;
 import sportify.matchmakingbackend.model.Player;
 import sportify.matchmakingbackend.model.enums.MatchStatus;
@@ -27,10 +29,12 @@ public class MatchServiceImpl implements MatchService {
 
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
+    private final ApplicationEventPublisher events;
 
-    public MatchServiceImpl(MatchRepository matchRepository, PlayerRepository playerRepository) {
+    public MatchServiceImpl(MatchRepository matchRepository, PlayerRepository playerRepository, ApplicationEventPublisher events) {
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
+        this.events = events;
     }
 
     @Override
@@ -109,7 +113,14 @@ public class MatchServiceImpl implements MatchService {
         if (match.isFull()) {
             match.setStatus(MatchStatus.FULL);
         }
-        return matchRepository.save(match);
+        Match saved = matchRepository.save(match);
+
+// известувањата се праќаат дури откако ова ќе се зачува во базата
+        events.publishEvent(new MatchEvents.PlayerJoined(matchId, playerId));
+        if (saved.getStatus() == MatchStatus.FULL) {
+            events.publishEvent(new MatchEvents.MatchFull(matchId));
+        }
+        return saved;
     }
 
     @Override
@@ -143,7 +154,9 @@ public class MatchServiceImpl implements MatchService {
             throw new InvalidOperationException("Cannot cancel a finished match");
         }
         match.setStatus(MatchStatus.CANCELLED);
-        return matchRepository.save(match);
+        Match saved = matchRepository.save(match);
+        events.publishEvent(new MatchEvents.MatchCancelled(matchId, requesterId));
+        return saved;
     }
 
     @Override
@@ -198,6 +211,13 @@ public class MatchServiceImpl implements MatchService {
     @Override
     @Transactional
     public int finishPastMatches() {
-        return matchRepository.finishPastMatches(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        List<Long> ids = matchRepository.findIdsToFinish(now);
+        if (ids.isEmpty()) {
+            return 0;
+        }
+        int finished = matchRepository.finishPastMatches(now);
+        events.publishEvent(new MatchEvents.MatchesFinished(ids));
+        return finished;
     }
 }
