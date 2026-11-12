@@ -48,6 +48,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/matches/*/reviews", "/api/matches/*/reviews/**").hasRole("USER")
                         // чатот во лобито: само играчи (мора ПРЕД јавниот GET подолу)
                         .requestMatchers("/api/matches/*/messages").hasRole("USER")
+                        // админ панел: само админ
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // пријава за недолично однесување: само играч
+                        .requestMatchers(HttpMethod.POST, "/api/players/*/reports").hasRole("USER")
                         // разгледување (GET) е јавно
                         .requestMatchers(HttpMethod.GET, "/api/sports/**", "/api/venues/**", "/api/matches/**").permitAll()
                         // менување спортови: само админ

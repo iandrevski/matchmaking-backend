@@ -63,4 +63,13 @@ public interface MatchRepository extends JpaRepository<Match, Long>, JpaSpecific
 
     // за потсетникот „почнува наскоро“
     List<Match> findByDateFromBetweenAndStatusIn(LocalDateTime from, LocalDateTime to, Collection<MatchStatus> statuses);
+
+    // дали двајца играчи биле во ист натпревар
+    @Query("""
+            select count(m) > 0 from Match m
+            join m.participants a
+            join m.participants b
+            where a.id = :firstId and b.id = :secondId
+            """)
+    boolean playedTogether(@Param("firstId") Long firstId, @Param("secondId") Long secondId);
 }
